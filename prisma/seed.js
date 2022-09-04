@@ -1,4 +1,4 @@
-import { PrismaClient, Role } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function seed() {
@@ -8,41 +8,76 @@ async function seed() {
 
   const john = await prisma.user.create({
     data: {
-      name: "John Doe",
+      username: "John Doe",
       email: "john@gmail.com",
       password: "john",
-      role: Role.Super_Admin,
+      role: "Super Admin",
     },
   });
 
   const sally = await prisma.user.create({
     data: {
-      name: "Sally Kelly",
+      username: "Sally Kelly",
       email: "sally@gmail.com",
       password: "sally",
+      role: "Member",
     },
   });
 
   const John_Profile = await prisma.user_Profile.create({
     data: {
-      username: "jdoe",
+      realName: "jdoe",
       phoneNo: 32,
       carrier: "32CN",
       alertType: "CN32",
-      zipCode: 75850,
-      cityState: "North Carolina",
+      pagerEmail: "pagerJ@gmail.com",
+      notificationArea: "area1",
+      notificationTypes: "Phone",
+      personalInfo: "I am man",
+      sendToEmail: true,
+      sendTextNotification: true,
+      sendToPager: true,
       userId: john.id,
     },
   });
 
   const Sally_Profile = await prisma.user_Profile.create({
     data: {
-      username: "skelly",
+      realName: "skelly",
       phoneNo: 34,
       carrier: "34CN",
       alertType: "CN34",
-      zipCode: 75854,
-      cityState: "South Carolina",
+      pagerEmail: "pagerS@gmail.com",
+      notificationArea: "area2",
+      notificationTypes: "Pager",
+      personalInfo: "I am girl",
+      sendToEmail: true,
+      sendTextNotification: true,
+      sendToPager: true,
+      userId: sally.id,
+    },
+  });
+
+  const John_Resident = await prisma.residence.create({
+    data: {
+      city: "Karachi",
+      address: "RS 26 /ST  12 N.Nazimabad",
+      state: "Sindh",
+      ZipCode: 85850,
+      // DateOfBirth: "25-9-91",
+      Occupation: "Killer",
+      userId: john.id,
+    },
+  });
+
+  const Sally_Resident = await prisma.residence.create({
+    data: {
+      city: "Karachi",
+      address: "FB AREA",
+      state: "Islamabad",
+      ZipCode: 85851,
+      // DateOfBirth: "5-9-94",
+      Occupation: "Writer",
       userId: sally.id,
     },
   });

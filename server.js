@@ -60,25 +60,26 @@ app.post("/user_create", async (req, res) => {
   return await commitToDb(
     prisma.user.create({
       data: {
-        name: req.body.name,
+        username: req.body.name,
         email: req.body.email,
         password: req.body.password,
+        role: req.body.role,
       },
     })
   );
 });
 
-app.patch("/user_update/:id", async (req, res) => {
+app.patch("/user_update", async (req, res) => {
   if (req.body.message === "" || req.body.message === null) {
     return res.send(app.httpErrors.badRequest("Message is Required"));
   }
   return await commitToDb(
     prisma.user.update({
       where: {
-        userId: parseInt(req.params.id),
+        id: parseInt(req.body.id),
       },
       data: {
-        name: req.body.name,
+        username: req.body.username,
         email: req.body.email,
         password: req.body.password,
       },
@@ -108,30 +109,33 @@ app.post("/user_profile_create", async (req, res) => {
         realname: req.body.realname,
         phoneNo: req.body.phoneNo,
         carrier: req.body.carrier,
-        alertType: req.body.alertType,
-        zipCode: req.body.zipCode,
-        cityState: req.body.cityState,
+        notificationArea: req.body.notificationArea,
+        notificationTypes: req.body.notificationTypes,
+        personalInfo: req.body.personalInfo,
+        sendToEmail: req.body.sendToEmail,
+        sendToPager: req.body.sendToPager,
       },
     })
   );
 });
 
-app.patch("/user_profile_update/:id", async (req, res) => {
+app.patch("/user_profile_update", async (req, res) => {
   if (req.body.message === "" || req.body.message === null) {
     return res.send(app.httpErrors.badRequest("Message is Required"));
   }
   return await commitToDb(
     prisma.user_Profile.update({
       where: {
-        userId: parseInt(req.params.id),
+        id: parseInt(req.body.id),
       },
       data: {
-        realname: req.body.realname,
-        phoneNo: req.body.phoneNo,
-        carrier: req.body.carrier,
-        alertType: req.body.alertType,
-        zipCode: req.body.zipCode,
-        cityState: req.body.cityState,
+        realName: req.body.realName,
+        pagerEmail: req.body.pagerEmail,
+        notificationArea: req.body.notificationArea,
+        notificationTypes: req.body.notificationTypes,
+        personalInfo: req.body.personalInfo,
+        sendToEmail: req.body.sendToEmail,
+        sendToPager: req.body.sendToPager,
       },
     })
   );
@@ -164,6 +168,54 @@ app.post("/incident", async (req, res) => {
         SMS_Chr_Count: req.body.SMS_Chr_Count,
         Internal_Note: req.body.Internal_Note,
         Confirmed_Incident: req.body.Confirmed_Incident,
+      },
+    })
+  );
+});
+
+//  Chat API
+
+app.get("/chatMessages", async (req, res) => {
+  return await commitToDb(
+    prisma.Chat_Messages.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+    })
+  );
+});
+
+app.post("/chatMessage", async (req, res) => {
+  if (req.body.message === "" || req.body.message === null) {
+    return res.send(app.httpErrors.badRequest("Message is Required"));
+  }
+  return await commitToDb(
+    prisma.chat_Messages.create({
+      data: {
+        name: req.body.name,
+        Message: req.body.Message,
+        userId: req.body.userId,
+      },
+    })
+  );
+});
+
+//  Residence API
+
+app.post("/residence_create", async (req, res) => {
+  if (req.body.message === "" || req.body.message === null) {
+    return res.send(app.httpErrors.badRequest("Message is Required"));
+  }
+  return await commitToDb(
+    prisma.residence.create({
+      data: {
+        address: req.body.address,
+        city: req.body.city,
+        state: req.body.state,
+        ZipCode: req.body.ZipCode,
+        DateOfBirth: req.body.DateOfBirth,
+        Occupation: req.body.Occupation,
+        userId: req.body.userId,
       },
     })
   );

@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Residence" ALTER COLUMN "DateOfBirth" SET DEFAULT CURRENT_TIMESTAMP;
