@@ -20,6 +20,7 @@ model User {
   User_Profile  User_Profile[]
   Residence     Residence[]
   Chat_Messages Chat_Messages[]
+  Incident      Incident[]
 }
 
 // enum Role {
@@ -55,14 +56,13 @@ model Residence {
   ZipCode     Int
   DateOfBirth DateTime @default(now())
   Occupation  String
-  user        User     @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   userId Int
 }
 
 model Incident {
   id                 Int      @id @default(autoincrement())
-  User_ID            Int      @unique
   Co_Credit          String
   Country            String
   Time               DateTime @default(now())
@@ -77,8 +77,9 @@ model Incident {
   SMS_Chr_Count      Int
   Internal_Note      String
   Confirmed_Incident Boolean
-
-  @@index([User_ID])
+  Queue              Boolean  @default(false)
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId             Int
 }
 
 model Chat_Messages {
@@ -86,7 +87,7 @@ model Chat_Messages {
   name      String
   Message   String
   createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
 }
 

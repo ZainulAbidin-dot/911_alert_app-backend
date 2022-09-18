@@ -18,7 +18,7 @@ app.register(fastifyJwt, {
 
 const prisma = new PrismaClient();
 
-// Generate Token
+//! Generate Token
 app.get("/generateToken/:id", (req, reply) => {
   const data = {
     id: req.params.id,
@@ -28,7 +28,7 @@ app.get("/generateToken/:id", (req, reply) => {
   reply.send({ token });
 });
 
-// Authentiction Decorator
+//! Authentiction Decorator
 app.decorate("authenticate", async function (req, reply) {
   // console.log(req.headers.authorization);
 
@@ -39,6 +39,7 @@ app.decorate("authenticate", async function (req, reply) {
   }
 });
 
+//! Validate Users
 app.get(
   "/validateToken",
   { onRequest: app.authenticate },
@@ -47,12 +48,29 @@ app.get(
   }
 );
 
-// Users API
+//! Users API
 
+//* Get All Users
 app.get("/users", async (req, res) => {
   return await commitToDb(prisma.user.findMany());
 });
 
+//* Get Specific Role Type Users
+app.get("/specific_users/:role", async (req, res) => {
+  if (req.params.message === "" || req.params.message === null) {
+    return res.send(app.httpErrors.badRequest("Message is Required"));
+  }
+  console.log(req);
+  return await commitToDb(
+    prisma.user.findMany({
+      where: {
+        role: req.params.role,
+      },
+    })
+  );
+});
+
+//* Create A User
 app.post("/user_create", async (req, res) => {
   if (req.body.message === "" || req.body.message === null) {
     return res.send(app.httpErrors.badRequest("Message is Required"));
@@ -65,10 +83,15 @@ app.post("/user_create", async (req, res) => {
         password: req.body.password,
         role: req.body.role,
       },
-    })
+      select: {
+        id: true,
+      },
+    }),
+    prisma.user_Profile.create({})
   );
 });
 
+//* Update User
 app.patch("/user_update", async (req, res) => {
   if (req.body.message === "" || req.body.message === null) {
     return res.send(app.httpErrors.badRequest("Message is Required"));
@@ -87,7 +110,7 @@ app.patch("/user_update", async (req, res) => {
   );
 });
 
-//  User Profile API
+//!  User Profile API
 
 app.get("/user_profile/:id", async (req, res) => {
   return await commitToDb(
@@ -141,12 +164,86 @@ app.patch("/user_profile_update", async (req, res) => {
   );
 });
 
-//  Icident API
+//!  Icident API
 
+//* All the Incident List
+/* This is a route that is used to get all the incidents. */
 app.get("/incident", async (req, res) => {
-  return await commitToDb(prisma.incident.findMany());
+  return await commitToDb(
+    prisma.incident.findMany({
+      select: {
+        Time: true,
+        Street: true,
+        City: true,
+        State: true,
+        Type: true,
+        Text: true,
+        user: true,
+      },
+    })
+  );
 });
 
+//* All the Queue Incident List
+app.get("/queue_incident", async (req, res) => {
+  return await commitToDb(
+    prisma.incident.findMany({
+      where: {
+        Queue: true,
+      },
+      select: {
+        Time: true,
+        Street: true,
+        City: true,
+        State: true,
+        Type: true,
+        Text: true,
+        user: true,
+      },
+    })
+  );
+});
+
+//* A Specific User Incident List
+app.get("/incident/:id", async (req, res) => {
+  return await commitToDb(
+    prisma.incident.findMany({
+      where: {
+        userId: parseInt(req.params.id),
+      },
+      select: {
+        Time: true,
+        State: true,
+        City: true,
+        Street: true,
+        Type: true,
+        Text: true,
+      },
+    })
+  );
+});
+
+//* A Specific User Queue Incident List
+app.get("/queue_incident/:id", async (req, res) => {
+  return await commitToDb(
+    prisma.incident.findMany({
+      where: {
+        userId: parseInt(req.params.id),
+        Queue: true,
+      },
+      select: {
+        Time: true,
+        State: true,
+        City: true,
+        Street: true,
+        Type: true,
+        Text: true,
+      },
+    })
+  );
+});
+
+// * Create an Incident
 app.post("/incident", async (req, res) => {
   if (req.body.message === "" || req.body.message === null) {
     return res.send(app.httpErrors.badRequest("Message is Required"));
@@ -154,7 +251,7 @@ app.post("/incident", async (req, res) => {
   return await commitToDb(
     prisma.incident.create({
       data: {
-        User_ID: req.body.User_ID,
+        userId: req.body.userId,
         Co_Credit: req.body.Co_Credit,
         Country: req.body.Country,
         Type: req.body.Type,
@@ -173,7 +270,53 @@ app.post("/incident", async (req, res) => {
   );
 });
 
-//  Chat API
+//* Update The Queue Status of The Incident
+app.patch("/incident_update_queue/:id", async (req, res) => {
+  if (req.body.message === "" || req.body.message === null) {
+    return res.send(app.httpErrors.badRequest("Message is Required"));
+  }
+  return await commitToDb(
+    prisma.incident.create({
+      where: {
+        id: req.params.id,
+      },
+      data: {
+        Queue: req.body.Queue,
+      },
+    })
+  );
+});
+
+// * Update Incident Altogether
+app.post("/incident_update/:id", async (req, res) => {
+  if (req.body.message === "" || req.body.message === null) {
+    return res.send(app.httpErrors.badRequest("Message is Required"));
+  }
+  return await commitToDb(
+    prisma.incident.create({
+      where: {
+        userId: req.params.id,
+      },
+      data: {
+        Co_Credit: req.body.Co_Credit,
+        Country: req.body.Country,
+        Type: req.body.Type,
+        Street: req.body.Street,
+        City: req.body.City,
+        State: req.body.State,
+        Longitude: req.body.Longitude,
+        Latitude: req.body.Latitude,
+        Zipcode: req.body.Zipcode,
+        Text: req.body.Text,
+        SMS_Chr_Count: req.body.SMS_Chr_Count,
+        Internal_Note: req.body.Internal_Note,
+        Confirmed_Incident: req.body.Confirmed_Incident,
+      },
+    })
+  );
+});
+
+//!  Chat API
 
 app.get("/chatMessages", async (req, res) => {
   return await commitToDb(
@@ -200,7 +343,7 @@ app.post("/chatMessage", async (req, res) => {
   );
 });
 
-//  Residence API
+//! Residence API
 
 app.post("/residence_create", async (req, res) => {
   if (req.body.message === "" || req.body.message === null) {

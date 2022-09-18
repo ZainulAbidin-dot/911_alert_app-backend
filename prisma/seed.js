@@ -2,9 +2,9 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function seed() {
-  await prisma.User.deleteMany();
-  await prisma.User_Profile.deleteMany();
-  //   await prisma.incident.deleteMany();
+  // await prisma.Incident.deleteMany();
+  await prisma.user.deleteMany();
+  // await prisma.User_Profile.deleteMany();
 
   const john = await prisma.user.create({
     data: {
@@ -82,9 +82,9 @@ async function seed() {
     },
   });
 
-  const incident = await prisma.incident.create({
+  const John_incident = await prisma.incident.create({
     data: {
-      User_ID: john.id,
+      userId: john.id,
       Co_Credit: "c3c",
       Country: "America",
       Type: "C",
@@ -97,6 +97,99 @@ async function seed() {
       Text: "Fire in C building one",
       SMS_Chr_Count: 2,
       Internal_Note: "Urgent Req",
+      Confirmed_Incident: true,
+    },
+  });
+
+  const John_incident2 = await prisma.incident.create({
+    data: {
+      userId: john.id,
+      Co_Credit: "z2z",
+      Country: "Canada",
+      Type: "C",
+      Street: "Rs 12 / St 1",
+      City: "North Iowa",
+      State: "Ohio",
+      Longitude: 3.142,
+      Latitude: 2.424,
+      Zipcode: 75859,
+      Text: "Fire in C building one",
+      SMS_Chr_Count: 2,
+      Internal_Note: "Urgent Req",
+      Confirmed_Incident: false,
+    },
+  });
+
+  const John_incident3 = await prisma.incident.create({
+    data: {
+      userId: john.id,
+      Co_Credit: "c3c",
+      Country: "Jezbak",
+      Type: "C",
+      Street: "Rs 14 / St 1",
+      City: "North Carolina",
+      State: "Ohio",
+      Longitude: 3.142,
+      Latitude: 2.424,
+      Zipcode: 75859,
+      Text: "Fire in C building one",
+      SMS_Chr_Count: 2,
+      Internal_Note: "Urgent Req",
+      Confirmed_Incident: true,
+    },
+  });
+
+  const Sally_incident = await prisma.incident.create({
+    data: {
+      userId: sally.id,
+      Co_Credit: "b4b",
+      Country: "Australia",
+      Type: "AT&A",
+      Street: "Rs 12 / St 1",
+      City: "North Carolina",
+      State: "Ohio",
+      Longitude: 3.142,
+      Latitude: 2.424,
+      Zipcode: 75859,
+      Text: "Fire in C building one",
+      SMS_Chr_Count: 2,
+      Internal_Note: "Urgent Req",
+      Confirmed_Incident: true,
+    },
+  });
+  const Sally_incident2 = await prisma.incident.create({
+    data: {
+      userId: sally.id,
+      Co_Credit: "d2d",
+      Country: "Australia",
+      Type: "AT&T",
+      Street: "Rs 12 / St 1",
+      City: "North Ohio",
+      State: "Ohio",
+      Longitude: 3.142,
+      Latitude: 2.424,
+      Zipcode: 75859,
+      Text: "Fire in C building three",
+      SMS_Chr_Count: 2,
+      Internal_Note: "Urgent Req",
+      Confirmed_Incident: false,
+    },
+  });
+  const Sally_incident3 = await prisma.incident.create({
+    data: {
+      userId: sally.id,
+      Co_Credit: "d2d",
+      Country: "America",
+      Type: "AT&T",
+      Street: "Rs 12 / St 12",
+      City: "North Ohio",
+      State: "Ohio",
+      Longitude: 3.142,
+      Latitude: 2.424,
+      Zipcode: 75859,
+      Text: "Fire in C building three",
+      SMS_Chr_Count: 2,
+      Internal_Note: " Req",
       Confirmed_Incident: true,
     },
   });
